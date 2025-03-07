@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Experimentos</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            background-color: #f4f6f9; 
+            padding: 20px; 
+            text-align: center; 
+        }
+        .container { 
+            background: white; 
+            padding: 20px; 
+            border-radius: 10px; 
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); 
+        }
+        .summary-box {
+            background: #005aa7; 
+            color: white; 
+            padding: 10px;
+            border-radius: 5px; 
+            text-align: center; font-size: 1.2em;
+            margin-bottom: 20px; width: 200px; 
+        }
+        h2 { 
+            color: #005aa7; 
+        }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 20px; 
+        }
+        th, td { 
+            padding: 12px; 
+            border-bottom: 1px solid #ddd; 
+        }
+        th { 
+            background-color: #005aa7; 
+            color: white; 
+        }
+        tr:hover { 
+            background-color: #e3f2fd; 
+        }
+        .filters { 
+            margin-bottom: 15px; 
+        }
+        .filters input, .filters select, .filters button { 
+            padding: 8px; 
+            border: 1px solid #ccc; 
+            border-radius: 5px; 
+            margin-right: 10px; 
+        }
+        .filters button { 
+            background-color: #ff6c00; 
+            color: white; 
+            border: none; 
+            cursor: pointer; 
+        }
+        .filters button:hover { 
+            background-color: #e65c00; 
+        }
+        .chart-container { 
+            margin-top: 20px; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="mb-4">Dashboard de Experimentos</h2>
+        <div class="summary-box">Total Experimentos: <span id="totalExperimentos">0</span></div>
+        <div class="filters">
+            <select id="mercadoFiltro">
+                <option value="">Todos los mercados</option>
+                <option value="Móvil">Móvil</option>
+                <option value="Hogar">Hogar</option>
+                <option value="Terminales">Terminales</option>
+                <option value="Care & Brand">Care & Brand</option>
+            </select>
+            <select id="estadoFiltro">
+                <option value="">Todos los estados</option>
+                <option value="Finalizado">Finalizado</option>
+                <option value="En ejecución">En ejecución</option>
+                <option value="Backlog">Backlog</option>
+            </select>
+            <select id="analisisFiltro">
+                <option value="">Todos los análisis</option>
+                <option value="Exitoso">Exitoso</option>
+                <option value="No exitoso">No exitoso</option>
+            </select>
+            <button onclick="filtrarExperimentos()">Filtrar</button>
+            <button class="btn btn-success" onclick="exportarPDF()">Exportar PDF</button>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Inicio</th>
+                    <th>Finalización</th>
+                    <th>Mercado</th>
+                    <th>Análisis</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody id="experimentos-body"></tbody>
+        </table>
+        <div class="chart-container">
+            <canvas id="chartExperimentos"></canvas>
+        </div>
+    </div>
+    <script>
+        const experimentos = [
+            { id: 1, nombre: "Exp 1", inicio: "2025-02-01", fin: "2025-02-15", mercado: "Móvil", analisis: "Exitoso", estado: "Finalizado" },
+            { id: 2, nombre: "Exp 2", inicio: "2025-02-10", fin: "2025-02-20", mercado: "Hogar", analisis: "No exitoso", estado: "Finalizado" },
+            { id: 3, nombre: "Exp 3", inicio: "2025-02-05", fin: "2025-02-18", mercado: "Care & Brand", analisis: "Exitoso", estado: "Finalizado" },
+            { id: 4, nombre: "Exp 4", inicio: "2025-02-08", fin: "2025-02-22", mercado: "Terminales", analisis: "No exitoso", estado: "Finalizado" }
+        ];
+
+        function cargarExperimentos(lista) {
+            const tbody = document.getElementById("experimentos-body");
+            tbody.innerHTML = "";
+            lista.forEach(exp => {
+                tbody.innerHTML += `<tr><td>${exp.id}</td><td>${exp.nombre}</td><td>${exp.inicio}</td><td>${exp.fin}</td><td>${exp.mercado}</td><td>${exp.analisis}</td><td>${exp.estado}</td></tr>`;
+            });
+            document.getElementById("totalExperimentos").innerText = lista.length;
+            actualizarGrafico(lista);
+        }
+
+        function filtrarExperimentos() {
+            const mercado = document.getElementById("mercadoFiltro").value;
+            const estado = document.getElementById("estadoFiltro").value;
+            const analisis = document.getElementById("analisisFiltro").value;
+
+            const filtrados = experimentos.filter(exp => {
+                return (!mercado || exp.mercado === mercado) &&
+                       (!estado || exp.estado === estado) &&
+                       (!analisis || exp.analisis === analisis);
+            });
+            cargarExperimentos(filtrados);
+        }
+
+        function actualizarGrafico(lista) {
+            const categorias = ["Móvil", "Hogar", "Terminales", "Care & Brand"];
+            const datos = categorias.map(cat => lista.filter(exp => exp.mercado === cat).length);
+
+            if (window.chartInstance) {
+                window.chartInstance.destroy();
+            }
+
+            window.chartInstance = new Chart(document.getElementById("chartExperimentos"), {
+                type: 'bar',
+                data: { labels: categorias, datasets: [{ label: "Cantidad de Experimentos", data: datos, backgroundColor: '#005aa7' }] },
+                options: { scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+            });
+        }
+
+		function exportarPDF() {
+		const { jsPDF } = window.jspdf;
+		const doc = new jsPDF();
+
+		// Establecer las fuentes
+		doc.setFont('Arial', 'normal');
+
+		// Título
+		doc.setFontSize(18);
+		doc.setTextColor(0, 90, 167);  // Color azul
+		doc.text("Dashboard de Experimentos", 14, 20);
+
+		// Filtrar los experimentos según los filtros activos
+		const mercadoFiltro = document.getElementById("mercadoFiltro").value;
+		const estadoFiltro = document.getElementById("estadoFiltro").value;
+		const analisisFiltro = document.getElementById("analisisFiltro").value;
+		
+		const mercado = mercadoFiltro || "";
+		const estado = estadoFiltro || "";
+		const analisis = analisisFiltro || "";
+
+		const experimentosFiltrados = experimentos.filter(exp => {
+			return (!mercado || exp.mercado === mercado) &&
+				   (!estado || exp.estado === estado) &&
+				   (!analisis || exp.analisis === analisis);
+		});
+
+		// Total de experimentos filtrados
+		const totalExperimentos = experimentosFiltrados.length;
+
+		// Cuadro con el total de experimentos (cuadrado y separado)
+		const cuadroYPos = 40;
+		doc.setTextColor(255, 255, 255); // Color blanco
+		doc.setFillColor(0, 90, 167); // Color azul
+		doc.rect(14, cuadroYPos, 180, 40, 'F'); // Cuadro cuadrado más grande
+		doc.setTextColor(255, 255, 255); // Texto blanco
+		doc.text(`Total de Experimentos: ${totalExperimentos}`, 18, cuadroYPos + 25); // Ajustamos la posición del texto
+
+		// Añadir un poco de espacio entre el total de experimentos y la tabla
+		const espacioEntre = cuadroYPos + 50;  // Incrementamos el espacio después del cuadro
+		doc.text('', 14, espacioEntre);
+
+		// Capturar el contenido de la tabla filtrada
+		const headers = ["ID", "Nombre", "Inicio", "Fin", "Mercado", "Análisis", "Estado"];
+		const data = experimentosFiltrados.map(exp => [exp.id, exp.nombre, exp.inicio, exp.fin, exp.mercado, exp.analisis, exp.estado]);
+
+		// Añadir tabla
+		doc.autoTable({
+			head: [headers],
+			body: data,
+			startY: espacioEntre + 10, // Inicia la tabla después del cuadro
+			theme: 'grid',
+			headStyles: { fillColor: [0, 90, 167], textColor: [255, 255, 255], fontSize: 12 }, // Cabecera azul
+			bodyStyles: { fontSize: 10 }, // Tamaño de fuente en la tabla
+			alternateRowStyles: { fillColor: [227, 242, 253] } // Color alternativo de filas
+		});
+
+		// Convertir el gráfico en imagen (base64)
+		const canvas = document.getElementById('chartExperimentos');
+		const chartImage = canvas.toDataURL('image/png');
+
+		// Añadir el gráfico al PDF
+		doc.addImage(chartImage, 'PNG', 14, doc.lastAutoTable.finalY + 10, 180, 90); // Ajusta las coordenadas según sea necesario
+
+		// Guardar el PDF
+		doc.save("experimentos.pdf");
+	}
+
+
+
+
+        window.onload = () => cargarExperimentos(experimentos);
+    </script>
+</body>
+</html>
