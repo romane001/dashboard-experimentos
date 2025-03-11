@@ -83,7 +83,7 @@
                 <option value="Móvil">Móvil</option>
                 <option value="Hogar">Hogar</option>
                 <option value="Terminales">Terminales</option>
-                <option value="Care & Brand">Care & Brand</option>
+                <option value="Brand & Care">Brand & Care</option>
             </select>
             <select id="estadoFiltro">
                 <option value="">Todos los estados</option>
@@ -119,12 +119,35 @@
     </div>
     <script>
         const experimentos = [
-            { id: 14, nombre: "Planes oferta portabilidad", inicio: "2024-05-27", fin: "2024-06-05", mercado: "Móvil", analisis: "No exitoso", estado: "Finalizado" },
-            { id: 16, nombre: "Landing intermedia hogar", inicio: "2024-06-11", fin: "2024-06-25", mercado: "Hogar", analisis: "No exitoso", estado: "Finalizado" },
-            { id: 17, nombre: "Landing intermedia móvil", inicio: "2024-06-12", fin: "2024-06-26", mercado: "Móvil", analisis: "Exitoso", estado: "Finalizado" },
-            { id: 32, nombre: "Landing intermedia móvil c2c", inicio: "2024-07-29", fin: "2024-08-10", mercado: "Móvil", analisis: "No exitoso", estado: "Finalizado" },
-	    { id: 52, nombre: "Landing beneficios", inicio: "2024-08-13", fin: "2024-08-27", mercado: "Care & Brand", analisis: "Exitoso", estado: "Finalizado" },
-            { id: 53, nombre: "Derivación tráfico menu", inicio: "2024-06-11", fin: "2024-06-25", mercado: "Hogar", analisis: "No exitoso", estado: "Finalizado" }
+			{ id: 14, nombre: "Planes oferta portabilidad", tipo: "A/B Test", inicio: "2024-05-27", fin: "2024-06-05", mercado: "Móvil", analisis: "No exitoso", estado: "Finalizado" },
+			{ id: 16, nombre: "Landing intermedia", tipo: "A/B Test", inicio: "2024-06-11", fin: "2024-06-25", mercado: "Hogar", analisis: "No exitoso", estado: "Finalizado" },
+			{ id: 17, nombre: "Landing intermedia", tipo: "A/B Test", inicio: "2024-06-12", fin: "2024-06-26", mercado: "Móvil", analisis: "Exitoso", estado: "Finalizado" },
+			{ id: 32, nombre: "Landing intermedia c2c", tipo: "A/B Test", inicio: "2024-07-29", fin: "2024-08-10", mercado: "Móvil", analisis: "No exitoso", estado: "Finalizado" },
+			{ id: 52, nombre: "Landing beneficios", tipo: "A/B Test", inicio: "2024-08-13", fin: "2024-08-27", mercado: "Care & Brand", analisis: "Exitoso", estado: "Finalizado" },
+			{ id: 53, nombre: "Derivación tráfico menu", tipo: "A/B Test", inicio: "2024-06-11", fin: "2024-06-25", mercado: "Care & Brand", analisis: "No exitoso", estado: "Finalizado" },
+			{ id: 67, nombre: "Landing Plan Adicional", tipo: "A/B Test", inicio: "2024-08-22", fin: "2024-09-05", mercado: "Móvil", analisis: "Exitoso", estado: "Finalizado" },
+			{ id: 113, nombre: "Banner Navidad", tipo: "A/B Test", inicio: "2024-12-06", fin: "2024-12-08", mercado: "Hogar", analisis: "Exitoso", estado: "Finalizado" },
+			{ id: 114, nombre: "Banner Navidad", tipo: "A/B Test", inicio: "2024-12-09", fin: "2024-12-09", mercado: "Hogar", analisis: "Exitoso", estado: "Finalizado" },
+			{ id: 119, nombre: "Banner Navidad", tipo: "A/B Test", inicio: "2024-12-10", fin: "2024-12-13", mercado: "Hogar", analisis: "Exitoso", estado: "Finalizado" },
+			{ id: 157, nombre: "Banner viejita", tipo: "A/B Test", inicio: "2025-02-12", fin: "2025-02-17", mercado: "Hogar", analisis: "Exitoso", estado: "Finalizado" },
+			{ id: 160, nombre: "Landing Brand Exacta", tipo: "A/B Test", inicio: "2025-02-17", fin: "2025-03-03", mercado: "Brand & Care", analisis: "Exitoso", estado: "Finalizado" },
+			{ id: 161, nombre: "Campaña BTS", tipo: "A/B Test", inicio: "2025-02-17", fin: "2025-03-03", mercado: "Terminales", analisis: "No exitoso", estado: "Finalizado" },
+			{ id: 167, nombre: "Banner Disney", tipo: "A/B Test", inicio: "2025-02-28", fin: "2025-03-14", mercado: "Hogar", analisis: "-", estado: "En ejecución" },
+			{ id: 21, nombre: "Topo", tipo: "Split URL", inicio: "2024-07-02", fin: "2024-07-16", mercado: "Móvil", analisis: "No exitoso", estado: "Finalizado" },
+			{ id: 22, nombre: "Topo ", tipo: "Split URL", inicio: "2024-07-08", fin: "2024-07-23", mercado: "Hogar", analisis: "No exitoso", estado: "Finalizado" },
+			{ id: 23, nombre: "Call Topo ", tipo: "Split URL", inicio: "2024-07-08", fin: "2024-07-18", mercado: "Móvil", analisis: "No exitoso", estado: "Finalizado" },
+			{ id: 33, nombre: "Cards Monopack", tipo: "Split URL", inicio: "2024-09-02", fin: "2024-09-12", mercado: "Hogar", analisis: "Exitoso", estado: "Finalizado" },
+			{ id: 34, nombre: "Cards Doblepack", tipo: "Split URL", inicio: "2024-09-02", fin: "2024-09-12", mercado: "Hogar", analisis: "Exitoso", estado: "Finalizado" },
+			{ id: 35, nombre: "Cards Triplepack", tipo: "Split URL", inicio: "2024-09-02", fin: "2024-09-12", mercado: "Hogar", analisis: "Exitoso", estado: "Finalizado" },
+			{ id: 72, nombre: "Recomendation", tipo: "Split URL", inicio: "2024-11-11", fin: "2024-11-24", mercado: "Care & Brand", analisis: "No exitoso", estado: "Finalizado" },
+			{ id: 86, nombre: "Sumador de Planes", tipo: "Split URL", inicio: "2024-11-12", fin: "2024-11-26", mercado: "Móvil", analisis: "No exitoso", estado: "Finalizado" },				{ id: 149, nombre: "Cards 3.0", tipo: "Split URL", inicio: "2025-02-07", fin: "2025-02-28", mercado: "Móvil", analisis: "No exitoso", estado: "Finalizado" },
+			{ id: 150, nombre: "Factibilizador", tipo: "Split URL", inicio: "2025-02-07", fin: "2025-02-21", mercado: "Hogar", analisis: "No exitoso", estado: "Finalizado" },
+			{ id: 171, nombre: "Factibilizador 2", tipo: "Split URL", inicio: "2025-03-10", fin: "2025-03-17", mercado: "Hogar", analisis: "-", estado: "En ejecución" },
+			{ id: 2, nombre: "Modal financiamiento", tipo: "A/B Test", inicio: "2024-08-07", fin: "2024-08-21", mercado: "Terminales", analisis: "No exitoso", estado: "Finalizado" },				{ id: 11, nombre: "Login ATG Planes", tipo: "A/B Test", inicio: "2024-10-11", fin: "2024-10-16", mercado: "Móvil", analisis: "Exitoso", estado: "Finalizado" },
+			{ id: 13, nombre: "Login ATG Productos", tipo: "A/B Test", inicio: "2024-10-11", fin: "2024-10-16", mercado: "Terminales", analisis: "Exitoso", estado: "Finalizado" },
+			{ id: 22, nombre: "Rotulo equipos", tipo: "A/B Test", inicio: "2024-11-07", fin: "2024-11-27", mercado: "Terminales", analisis: "No exitoso", estado: "Finalizado" },
+			{ id: 26, nombre: "Login ATG Productos 2", tipo: "A/B Test", inicio: "2024-11-08", fin: "2024-11-27", mercado: "Terminales", analisis: "Exitoso", estado: "Finalizado" },
+			{ id: 27, nombre: "Login ATG Planes 2", tipo: "A/B Test", inicio: "2024-11-08", fin: "2024-11-27", mercado: "Móvil", analisis: "No exitoso", estado: "Finalización" },
         ];
 
         function cargarExperimentos(lista) {
